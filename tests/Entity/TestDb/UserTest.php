@@ -31,10 +31,17 @@ class UserTest extends TestCase
     {
         $user = new User();
         $labels = $user->getAttributeLabels();
-        
+
         $this->assertArrayHasKey('username', $labels);
         $this->assertArrayHasKey('email', $labels);
         $this->assertEquals('Username', $labels['username']);
         $this->assertEquals('Email', $labels['email']);
+    }
+
+    public function testFindAll()
+    {
+        $users = User::query()->all();
+        $this->assertCount(User::query()->count(), $users);
+        $this->assertInstanceOf(User::class, $users[0]);
     }
 }

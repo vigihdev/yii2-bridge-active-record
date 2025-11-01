@@ -2,7 +2,6 @@
 
 namespace VigihDev\Yii2Bridge\ActiveRecord\Tests;
 
-
 abstract class TestCase extends \PHPUnit\Framework\TestCase
 {
 
