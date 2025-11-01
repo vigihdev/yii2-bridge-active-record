@@ -43,7 +43,7 @@ abstract class YourBaseModel extends BaseActiveRecord
     protected static function getServiceName(): string
     {
         // The name of the database connection service configured in your container
-        return 'db'; 
+        return 'db';
     }
 }
 ```
