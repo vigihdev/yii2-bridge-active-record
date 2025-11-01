@@ -33,7 +33,6 @@ final class ActiveRecordEvent extends AttributeHandlerProvider
 
     public function handleAfterUpdate(AfterUpdate $event): void
     {
-        var_dump($event);
         $this->callModelMethod($event->model, 'onAfterUpdate', $event);
     }
 
