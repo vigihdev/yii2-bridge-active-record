@@ -8,7 +8,7 @@ use Yiisoft\Validator\Rule\{Required, Length, Integer, Email, Regex};
 use DateTimeImmutable;
 use VigihDev\Yii2Bridge\ActiveRecord\Event\ActiveRecordEvent;
 use VigihDev\Yii2Bridge\Validator\Rules\{ExistsRecordRule, UniqueRecordRule};
-use Yiisoft\ActiveRecord\Event\{AfterUpdate, BeforeUpdate};
+use Yiisoft\ActiveRecord\Event\{AfterUpdate, BeforeDelete, BeforeInsert, BeforeUpdate};
 
 /**
  * Class User
@@ -67,9 +67,23 @@ class User extends BaseActiveRecord
         ];
     }
 
+    public function onBeforeInsert(BeforeInsert $event): void
+    {
+        // Logika sebelum data disimpan pertama kali
+        $this->created_at = new DateTimeImmutable();
+        echo "[CUSTOM] User::onBeforeInsert - Set created_at.\n";
+    }
+
+    public function onBeforeDelete(BeforeDelete $event): void
+    {
+        // Logika sebelum data dihapus (misal: cek foreign key)
+        echo "[CUSTOM] User::onBeforeDelete - Running safety checks.\n";
+        // throw new \Exception('Deletion forbidden'); // Contoh menghentikan operasi
+    }
+
     public function onBeforeUpdate(BeforeUpdate $event)
     {
-        echo "[DEFAULT] Before Update.\n";
+        echo "[DEFAULT] Before Update From " . $event->model::class . "<br>";
     }
 
     public function onAfterUpdate(AfterUpdate $event): void

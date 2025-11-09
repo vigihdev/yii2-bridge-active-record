@@ -6,7 +6,7 @@ namespace VigihDev\Yii2Bridge\ActiveRecord;
 
 use VigihDev\Yii2Bridge\ActiveRecord\Event\ActiveRecordEvent;
 use VigihDev\Yii2Bridge\ActiveRecord\Service\ActiveRecordService;
-use Yiisoft\ActiveRecord\Event\{AfterDelete, AfterInsert, AfterUpdate, BeforeUpdate};
+use Yiisoft\ActiveRecord\Event\{AfterDelete, AfterInsert, AfterUpdate, BeforeDelete, BeforeInsert, BeforeUpdate};
 use Yiisoft\ActiveRecord\Event\EventDispatcherProvider;
 
 /**
@@ -27,9 +27,12 @@ abstract class BaseActiveRecord extends ActiveRecordService
      */
     public function save(?array $properties = null): void
     {
-        $isNew = $this->isNew();
-        parent::save($properties);
         $dispatcher = EventDispatcherProvider::get(static::class);
+        $isNew = $this->isNew();
+        if ($isNew) {
+            $dispatcher->dispatch(new BeforeInsert($this, $properties));
+        }
+        parent::save($properties);
         $dispatcher->dispatch($isNew ? new AfterInsert($this, true) : new AfterUpdate($this, 1));
     }
 
@@ -42,8 +45,9 @@ abstract class BaseActiveRecord extends ActiveRecordService
      */
     public function delete(): int
     {
-        $result = parent::delete();
         $dispatcher = EventDispatcherProvider::get(static::class);
+        $dispatcher->dispatch(new BeforeDelete($this));
+        $result = parent::delete();
         $dispatcher->dispatch(new AfterDelete($this, $result));
         return $result;
     }

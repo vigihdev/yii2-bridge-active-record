@@ -6,7 +6,7 @@ namespace VigihDev\Yii2Bridge\ActiveRecord\Event;
 
 use Attribute;
 use Yiisoft\ActiveRecord\Event\Handler\AttributeHandlerProvider;
-use Yiisoft\ActiveRecord\Event\{AfterInsert, AfterUpdate, AfterDelete, BeforeUpdate};
+use Yiisoft\ActiveRecord\Event\{AfterInsert, AfterUpdate, AfterDelete, BeforeDelete, BeforeInsert, BeforeUpdate};
 
 /**
  * ActiveRecordEvent
@@ -24,12 +24,25 @@ final class ActiveRecordEvent extends AttributeHandlerProvider
     public function getEventHandlers(): array
     {
         return [
+            BeforeInsert::class => [$this, 'handleBeforeInsert'],
             BeforeUpdate::class => [$this, 'handleBeforeUpdate'],
             AfterInsert::class => [$this, 'handleAfterInsert'],
             AfterUpdate::class => [$this, 'handleAfterUpdate'],
+            BeforeDelete::class => [$this, 'handleBeforeDelete'],
             AfterDelete::class => [$this, 'handleAfterDelete'],
         ];
     }
+
+    /**
+     * Handles the BeforeInsert event.
+     *
+     * @param BeforeInsert $event The event.
+     */
+    public function handleBeforeInsert(BeforeInsert $event): void
+    {
+        $this->callModelMethod($event->model, 'onBeforeInsert', $event);
+    }
+
 
     /**
      * Handles the AfterInsert event.
@@ -59,6 +72,17 @@ final class ActiveRecordEvent extends AttributeHandlerProvider
     public function handleAfterUpdate(AfterUpdate $event): void
     {
         $this->callModelMethod($event->model, 'onAfterUpdate', $event);
+    }
+
+
+    /**
+     * Handles the BeforeDelete event.
+     *
+     * @param BeforeDelete $event The event.
+     */
+    public function handleBeforeDelete(BeforeDelete $event): void
+    {
+        $this->callModelMethod($event->model, 'onBeforeDelete', $event);
     }
 
     /**
